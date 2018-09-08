@@ -1,0 +1,76 @@
+html,body{
+    width: 100%;
+    height: 100%;
+    padding: 0 0;
+    margin: 0 0;
+    background-color: #d0d3d8;
+}
+#block1{
+    padding: 0 0;
+    margin: 0 0;
+}
+#block1 > #block1_0{
+    height: 6vh;
+    width: 100%;
+    background-color: #2E294E;
+    color: white;
+    text-transform: uppercase;
+}
+#block1 > #block1_1 {
+    width: 100%;
+    height: 100%;
+    margin-top: 1.5vh;
+}
+
+#block1 > #block1_1 > button{
+    width: 15vw;
+    height: 5vh;
+    margin: 0 2%;
+    border-radius: 5px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-color: #235789;
+}
+
+#block1 > #block1_2{
+    width: 60vw;
+    height: 100%;
+    float: left;
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+    padding-left:5vw;
+    font-size: 20px;
+}
+#block1 > #block1_2 > button{
+    width:250px;
+    height:30px;
+    margin-top: 5vh;
+}
+#block1 > #block1_2 > h2{
+    font-size: 23px;
+    font-weight: 200;
+    letter-spacing: 1%;
+}
+#block1 > #block1_2 >select{
+    width: 300px;
+    height: 25px;
+}
+#block1 > #block1_2 >input{
+    width: 300px;
+    height: 25px;
+}
+
+#block1> #block1_3{
+    width: 30vw;
+    height: 100%;
+    border: 2px solid black;
+    border-radius: 5px;
+    float: right;
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+    letter-spacing: 1px;
+    background-color: #FDFFFC;
+}
+#block1 > documentation{
+    float: right;
+}

@@ -1,0 +1,136 @@
+pragma solidity ^0.4.11;
+
+
+contract PropertyTransfer {
+
+    address public DA;
+    uint256 public totalNoOfProperty;
+    
+    function PropertyTransfer() {  
+        DA = msg.sender;
+    }
+    
+    modifier onlyOwner() {
+        require(msg.sender == DA);
+        _;
+    }
+    // To represent type of property i.e land or flat or bungalow or house
+    enum TypeOfProperty {LAND, FLAT, BUNGALOW,HOUSE}
+    struct Property {
+        string name;
+        bool isSold;
+        TypeOfProperty propertytype;
+        string postaladdress;
+        uint256 surfacearea;    // in square ft
+        string ownername;
+        string owneraddress;
+        string ownerphonenumber;
+        uint propertycost; // It contains at how much cost property was sold.
+    }
+    
+    mapping(address => mapping(uint256 => Property)) public propertiesOwner;
+    mapping(address => uint256) individualCountOfPropertyPerOwner;
+    
+    
+    event  PropertyAlloted(address indexed _verifiedOwner, uint256 indexed _totalNoOfPropertyCurrently, string _nameOfProperty, string _msg);
+    event PropertyTransfered(address indexed _from, address indexed _to, string _propertyName, string _msg);
+    
+    // a getter function for propertiesOwner
+    function getpropertiesOwner(address _ownerAddress,uint256 _inxed) returns(string){
+        string propertyname = propertiesOwner[_ownerAddress][_inxed].name;
+        return propertyname;
+    }
+    
+    
+    function getPropertyCountOfAnyAddress(address _ownerAddress) view returns (uint256){
+        uint count = 0;
+        for(uint i=1;i<=individualCountOfPropertyPerOwner[_ownerAddress];i++){
+            if(propertiesOwner[_ownerAddress][i].isSold != true){
+                count +=1;   
+            }
+        }
+        return count;
+    }
+    
+    /*allotProperty is the function which is responsible of assigning property to anyone,
+    this function is only accessible by one owner which is here the Government who deploy the
+    contract.*/
+    function allotProperty(address _verifiedOwner, string _propertyName, string _propertytype,string _postaladdress,uint256 _surfacearea,string _ownername,string _owneradd,string _ownerphonenumber,uint256 _propertycost) onlyOwner returns(bool){
+        individualCountOfPropertyPerOwner[_verifiedOwner] +=1;
+        propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].name = _propertyName;
+        // assign the type of property
+        if(stringsEqual(_propertytype,"HOUSE")){
+            propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].propertytype = TypeOfProperty.HOUSE;
+        }else if(stringsEqual(_propertytype,"LAND")){
+            propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].propertytype = TypeOfProperty.LAND;
+        }else if(stringsEqual(_propertytype,"BUNGALOW")){
+            propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].propertytype = TypeOfProperty.BUNGALOW;
+        }else if(stringsEqual(_propertytype,"FLAT")){
+            propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].propertytype = TypeOfProperty.FLAT;
+        }
+        propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].postaladdress = _postaladdress;
+        propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].surfacearea = _surfacearea;
+        
+        propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].ownername = _ownername;
+        propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].owneraddress = _owneradd;
+        propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].ownerphonenumber = _ownerphonenumber;
+        
+        propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].propertycost = _propertycost;
+        totalNoOfProperty++;
+        propertiesOwner[_verifiedOwner][individualCountOfPropertyPerOwner[_verifiedOwner]].isSold = false;
+        PropertyAlloted(_verifiedOwner,individualCountOfPropertyPerOwner[_verifiedOwner], _propertyName,"property allotted successfully");
+    }
+    
+    function stringsEqual (string al, string a2) view returns (bool){
+        return sha3(al) == sha3(a2)? true:false;
+    }
+    
+    function isOwner(address _checkOwnerAddress, string _propertyName) view returns (uint){
+        uint i;
+        bool flag=false;
+        
+        for(i=1;i<=individualCountOfPropertyPerOwner[_checkOwnerAddress];i++){
+            if(stringsEqual(propertiesOwner[_checkOwnerAddress][i].name,_propertyName) == true && propertiesOwner[_checkOwnerAddress][i].isSold == false){
+                flag = true;
+                break;
+            }
+        }
+            if(flag == true){
+                return i;
+            }else{
+                return 999999999;
+            }
+    }
+    
+    
+    
+    /*Function to transfer property from one owner to another owner*/
+    // propertycost to set at which price the property is sold.
+    function transferProperty (address _to, string _propertyName, uint256 _propertycost,string _newownername,string _newowneraddress,string _newownerphone) returns (uint, uint)
+    {
+        uint256 checkOwner = isOwner(msg.sender, _propertyName);
+        
+        // checking the ownership of property
+        if(checkOwner != 999999999 && propertiesOwner[msg.sender][checkOwner].isSold == false){
+            /// step 1 . remove the property from the current owner and decrase the counter.
+            /// step 2 . assign the property to the new owner and increase the counter
+            propertiesOwner[msg.sender][checkOwner].isSold = true;
+            propertiesOwner[msg.sender][checkOwner].name = "Sold";// really nice finding. we can't put empty string
+            individualCountOfPropertyPerOwner[_to] +=1;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].name = _propertyName;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].propertytype = propertiesOwner[msg.sender][checkOwner].propertytype;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].postaladdress = propertiesOwner[msg.sender][checkOwner].postaladdress;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].surfacearea = propertiesOwner[msg.sender][checkOwner].surfacearea;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].ownername = _newownername;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].owneraddress = _newowneraddress;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].ownerphonenumber = _newownerphone;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].propertycost = _propertycost;
+            propertiesOwner[_to][individualCountOfPropertyPerOwner[_to]].isSold = false;
+            PropertyTransfered(msg.sender , _to, _propertyName, "Owner has been changed." );
+            return(10,checkOwner);
+        }
+        else {
+            revert('Something bad happened');
+        }
+    }
+}

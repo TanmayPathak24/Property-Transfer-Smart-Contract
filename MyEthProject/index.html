@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Property&nbsp;Transfer&nbsp;SmartContract</title>
+	<meta name="author" content="John Doe">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+
+</head>
+<body>
+    
+    <div id="block1">
+		<div id="block1_0">
+			<center><h1>Property Transfer</h1></center>
+		</div>
+		<div id="block1_1">
+            <button id="allotproperty_button">Allot&nbsp;Property</button>
+            <button id="transferproperty_button">Transfer&nbsp;Property</button>
+            <button id="getpropertycount_button">Get&nbsp;Property&nbsp;Count</button>
+            <button id="isowner_button">Is&nbsp;Owner</button>
+            <button id="propertiesowner_button">Properties&nbsp;Owner</button>
+        </div>
+        <div id="block1_2">
+            Here we get content.
+		</div>
+		<div id="block1_3">
+
+		</div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+    if (typeof web3 !== 'undefined'){
+ 		web3 = new Web3(web3.currentProvider);
+ 	} else 
+	{
+ 		// set the provider you want from Web3.providers
+		web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+ 	}
+	 console.log(web3.eth.accounts);
+	document.getElementById("block1_3").innerHTML =
+	"<center><h3>The Addresses(Use only these)</center></h3><br>"+ 
+	"<font color='green'>(1)&nbsp&nbsp"+web3.eth.accounts[0] +"</font><br><font color='red'>(Use this address for contract deployment,Because first account is default account.)</font><br><br>"+
+	"(2)&nbsp&nbsp"+web3.eth.accounts[1] +"<br><br>"+
+	"(3)&nbsp&nbsp"+web3.eth.accounts[2] +"<br><br>"+
+	"(4)&nbsp&nbsp"+web3.eth.accounts[3] +"<br><br>"+
+	"(5)&nbsp&nbsp"+web3.eth.accounts[4] +"<br><br>"+
+	"(6)&nbsp&nbsp"+web3.eth.accounts[5] +"<br><br>"+
+	"(7)&nbsp&nbsp"+web3.eth.accounts[6] +"<br><br>"+
+	"(8)&nbsp&nbsp"+web3.eth.accounts[7] +"<br><br>"+
+	"(9)&nbsp&nbsp"+web3.eth.accounts[8] +"<br><br>"+
+	"(10)&nbsp&nbsp"+web3.eth.accounts[9] +"<br>";
+	web3.eth.defaultAccount = web3.eth.accounts[0];
+	
+	var mycontract = web3.eth.contract([
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "DA",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "al",
+				"type": "string"
+			},
+			{
+				"name": "a2",
+				"type": "string"
+			}
+		],
+		"name": "stringsEqual",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_ownerAddress",
+				"type": "address"
+			},
+			{
+				"name": "_inxed",
+				"type": "uint256"
+			}
+		],
+		"name": "getpropertiesOwner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_verifiedOwner",
+				"type": "address"
+			},
+			{
+				"name": "_propertyName",
+				"type": "string"
+			},
+			{
+				"name": "_propertytype",
+				"type": "string"
+			},
+			{
+				"name": "_postaladdress",
+				"type": "string"
+			},
+			{
+				"name": "_surfacearea",
+				"type": "uint256"
+			},
+			{
+				"name": "_ownername",
+				"type": "string"
+			},
+			{
+				"name": "_owneradd",
+				"type": "string"
+			},
+			{
+				"name": "_ownerphonenumber",
+				"type": "string"
+			},
+			{
+				"name": "_propertycost",
+				"type": "uint256"
+			}
+		],
+		"name": "allotProperty",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "totalNoOfProperty",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "propertiesOwner",
+		"outputs": [
+			{
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"name": "isSold",
+				"type": "bool"
+			},
+			{
+				"name": "propertytype",
+				"type": "uint8"
+			},
+			{
+				"name": "postaladdress",
+				"type": "string"
+			},
+			{
+				"name": "surfacearea",
+				"type": "uint256"
+			},
+			{
+				"name": "ownername",
+				"type": "string"
+			},
+			{
+				"name": "owneraddress",
+				"type": "string"
+			},
+			{
+				"name": "ownerphonenumber",
+				"type": "string"
+			},
+			{
+				"name": "propertycost",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_ownerAddress",
+				"type": "address"
+			}
+		],
+		"name": "getPropertyCountOfAnyAddress",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_checkOwnerAddress",
+				"type": "address"
+			},
+			{
+				"name": "_propertyName",
+				"type": "string"
+			}
+		],
+		"name": "isOwner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "_propertyName",
+				"type": "string"
+			},
+			{
+				"name": "_propertycost",
+				"type": "uint256"
+			},
+			{
+				"name": "_newownername",
+				"type": "string"
+			},
+			{
+				"name": "_newowneraddress",
+				"type": "string"
+			},
+			{
+				"name": "_newownerphone",
+				"type": "string"
+			}
+		],
+		"name": "transferProperty",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "_verifiedOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "_totalNoOfPropertyCurrently",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "_nameOfProperty",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "_msg",
+				"type": "string"
+			}
+		],
+		"name": "PropertyAlloted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "_propertyName",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "_msg",
+				"type": "string"
+			}
+		],
+		"name": "PropertyTransfered",
+		"type": "event"
+	}
+]);
+
+var contract = mycontract.at('0xb4e70b7c89cf3babc3528d736af891bca7b51c97');
+// Here paste the contract address
+
+	// Dummy transactions
+	contract.allotProperty(web3.eth.accounts[1],"property1","HOUSE","138 , Oppshops, Apollotower,Gwalior,(M.P)",900,"Tanmay Pathak","A-12 Girraj Colony,Gwalior,(M.P)","9852365478","2500000",{gas:3000000});
+	contract.allotProperty(web3.eth.accounts[1],"property2","HOUSE","A-12 Millennium Apartment,Gwalior,(M.P)",1200,"Tanmay Pathak","A-12 Girraj Colony,Gwalior,(M.P)","9852365478","3500000",{gas:3000000});
+	contract.allotProperty(web3.eth.accounts[2],"property3","LAND","A-12 Atul Apartment,Indore,(M.P)",760,"Rajesh Kumar","Millennium Corridor, Super Corridor Rd, Palakhedi, Madhya Pradesh 452005","9852365858","3500000",{gas:3000000});
+	contract.allotProperty(web3.eth.accounts[3],"property4","BUNGALOW","Bypass Rd, Near Silver Spring Township, Phase II, Nayta Mundla, Indore, Madhya Pradesh 452001",1300,"Vipin Kumar Sharma","Millennium Corridor, Super Corridor Rd, Palakhedi, Madhya Pradesh 452005","985233652","3500000",{gas:3000000});
+	contract.allotProperty(web3.eth.accounts[3],"property5","FLAT","131,1st Floor,Trade Center, 18 South Tukoganj, Indore, Madhya Pradesh 452001",750,"Vipin Kumar Sharma","Millennium Corridor, Super Corridor Rd, Palakhedi, Madhya Pradesh 452005","985233652","3500000",{gas:3000000});
+	contract.allotProperty(web3.eth.accounts[3],"property6","HOUSE","620-621, Sector A, Mahalaxmi Nagar, Indore, Madhya Pradesh 452010",1100,"Vipin Kumar Sharma","Millennium Corridor, Super Corridor Rd, Palakhedi, Madhya Pradesh 452005","985233652","3500000",{gas:3000000});
+ 
+    $("#allotproperty_button").click(function(){
+        document.getElementById("block1_2").innerHTML = "<h2>Verified&nbsp;Owner&nbsp;Address</h2><input type='text' id='verifiedowneraddress'>"+
+        "<h2>Property&nbsp;Name</h2><input type='text' id='propertyname'>"+
+		"<h2>Type of property</h2>"+
+		"<select id='typeofproperty'>"+
+			"<option value='HOUSE'>HOUSE</option>"+
+			"<option value='FLAT'>FLAT</option>"+
+			"<option value='LAND'>LAND</option>"+
+			"<option value='BUNGALOW'>BUNGALOW</option>"+
+		"<select>"+
+		"<h2>Postal address</h2>"+
+		"<input type='text' id='postaladdress'>"+
+		"<h2>Surface Area</h2>"+
+		"<input type='number' id='surfacearea'>"+
+		"<h2>Owner Name</h2>"+
+		"<input type='text' placeholder='Enter full name' id='ownername'>"+
+		"<h2>Owner Address</h2>"+
+		"<input type='text' id='owneraddress'>"+
+		"<h2>Owner Phone number</h2>"+
+		"<input type='number' id='ownernumber'>"+
+		"<h2>Property Cost</h2>"+
+		"<input type='number' id='propertycost'><br>"
+        +"<button id='allotproperty_button' onclick='allotpropertyfun()'>Submit</button>";
+    });
+    $("#transferproperty_button").click(function(){
+        document.getElementById("block1_2").innerHTML = "<h2>Property Owner</h2><input type='text' id='propertyowner'>"+
+		"<h2>Address of recipent</h2><input type='text' id='to'>"+
+		"<h2>Recipent Name</h2><input type='text' id='recipentname' placeholder='Full Name'>"+
+		"<h2>Recipent Address</h2><input type='text' id='recipentaddress'>"+
+		"<h2>Recipent Phone number</h2><input type='text' id='recipentphonenumber'>"+
+        "<h2>Property&nbsp;Name</h2><input type='text' id='propertyname'>"+
+		"<h2>Property cost</h2><input type='text' id='propertycost'>"+
+        "<button id='transferproperty_submit' onclick='transferpropertyfun()'>Submit</button>";
+    });
+    $("#getpropertycount_button").click(function(){
+        document.getElementById("block1_2").innerHTML = "<h2>Address</h2><input type='text' id='address'>"+
+        "<br><button id='getpropertycount_submit' onclick='getcount();'>Submit</button>";
+    });
+    $("#isowner_button").click(function(){
+        document.getElementById("block1_2").innerHTML = "<h2>Address</h2><input type='text' id='address'>"+
+        "<h2>Property&nbsp;Name</h2><input type='text' id='propertyname'><br>"+
+        "<button id='isowner_submit' onclick='isownerfun()'>Submit</button>";
+    });
+    $("#propertiesowner_button").click(function(){
+        document.getElementById("block1_2").innerHTML = "<h2>Address</h2><input type='text' id='address'>"+
+        "<h2>Property Index</h2><input type='text' id='index'><br>"+
+        "<button id='propertiesowner_submit' onclick='propertiesownerfun()'>Submit</button>";
+    });
+
+    function getcount(){
+		contract.getPropertyCountOfAnyAddress($("#address").val(),function(error,result){
+			document.getElementById("block1_2").innerHTML = "Total number of properties : &nbsp;&nbsp;&nbsp;"+result;		
+		});
+    }
+
+	function allotpropertyfun(){
+		contract.allotProperty($("#verifiedowneraddress").val(),$("#propertyname").val(),$("#typeofproperty").val(),$("#postaladdress").val(),$("#surfacearea").val(),$("#ownername").val(),$("#owneraddress").val(),$("#ownernumber").val(),$("#propertycost").val(),{gas:3000000});
+		document.getElementById("block1_2").innerHTML = "Property allotted successfully";		
+	}
+
+	function transferpropertyfun(){
+		contract.transferProperty($("#to").val(),$("#propertyname").val(),$("#propertycost").val(),$("#recipentname").val(),$("#recipentaddress").val(),$("#recipentphonenumber").val(),{from: $("#propertyowner").val(),gas:3000000},function(error,result){
+			if(!error){
+				console.log(result[0]+result[1]);
+				
+					document.getElementById("block1_2").innerHTML = "Property transfered successfully";
+				
+			}else{
+				document.getElementById("block1_2").innerHTML = "Invalid transaction";
+				console.log(error);
+			}
+		});
+	}
+
+	function isownerfun(){
+		contract.isOwner($("#address").val(),$("#propertyname").val(),function(error,result){
+			if(!error){
+				if(result != 999999999){
+					document.getElementById("block1_2").innerHTML = "Yes He is the varified owner&nbsp;&nbsp;&nbsp;"+result+"(index)";
+				}else{
+					document.getElementById("block1_2").innerHTML = "He/She is not owner of the property";
+				}
+			}else{
+				console.log(error);
+			}
+		});
+	}
+
+	function propertiesownerfun(){
+		var result = contract.propertiesOwner($("#address").val(),$("#index").val());
+		document.getElementById("block1_2").innerHTML = 
+		"Property Name :&nbsp;&nbsp;&nbsp;"+result[0]+"<br>"+
+		"Property Sold :&nbsp;&nbsp;&nbsp;"+result[1]+"<br>"+
+		"Property type :&nbsp;&nbsp;&nbsp;"+result[2]+"<br>"+
+		"Property Address :&nbsp;&nbsp;&nbsp;"+result[3]+"<br>"+
+		"Property Area :&nbsp;&nbsp;&nbsp;"+result[4]+"<br>"+
+		"Property Owner :&nbsp;&nbsp;&nbsp;"+result[5]+"<br>"+
+		"Property Owner :Address &nbsp;&nbsp;&nbsp;"+result[6]+"<br>"+
+		"Property Owner :Contact number&nbsp;&nbsp;&nbsp;"+result[7]+"<br>"+
+		"Property Current Rate :&nbsp;&nbsp;&nbsp;"+result[8];
+	}
+    </script>
+
+</body>
+</html>
